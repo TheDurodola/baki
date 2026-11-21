@@ -1,10 +1,10 @@
-# Baki 🏋️‍♂️
+# Baki
 
 A robust, modular monolith backend server for gym customer management and payments, written in idiomatic **Go** using the **Go Standard Library (`net/http`)**.
 
 ---
 
-## ⚡ Features
+## Features
 
 - **Customer & Member Management**: Full lifecycle management of gym members, profiles, and attendance/status tracking (`active`, `suspended`, `inactive`).
 - **Flexible Membership Plans**: Configurable plans (daily, monthly, quarterly, annual) with automatic subscription validity and renewal calculation.
@@ -20,7 +20,7 @@ A robust, modular monolith backend server for gym customer management and paymen
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Language**: Go 1.22+ (tested on Go 1.25)
 - **HTTP Routing**: Go Standard Library `net/http` (`http.ServeMux`)
@@ -31,7 +31,7 @@ A robust, modular monolith backend server for gym customer management and paymen
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 baki/
@@ -56,7 +56,7 @@ baki/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -122,7 +122,7 @@ The server will be available at `http://localhost:8080`.
 
 ---
 
-## 📡 API Reference Overview
+## API Reference Overview
 
 ### Health
 - `GET /healthz` - Service health status
@@ -154,7 +154,7 @@ The server will be available at `http://localhost:8080`.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run all unit and integration tests:
 
@@ -168,6 +168,6 @@ go test -v -race ./...
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
