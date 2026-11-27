@@ -159,43 +159,448 @@ The server will be available at `http://localhost:8080`.
 ## API Reference Overview
 
 ### Health
-- `GET  /healthz` - Service health status
+- `GET /healthz` - Service health status
+  - **Response (`200 OK`)**:
+    ```json
+    { "status": "ok" }
+    ```
+
+---
 
 ### Authentication & Sessions
-- `POST /api/v1/auth/register` - Register a new member (strictly requires `emergency_contact`) *(Rate Limit: 3/hr per IP)*
-- `POST /api/v1/auth/login` - Authenticate credentials and receive token pair (`access_token`, `refresh_token`) *(Rate Limit: 5/15m Account, 20/15m IP)*
-- `POST /api/v1/auth/refresh` - Rotate refresh token and obtain a fresh token pair
-- `POST /api/v1/auth/logout` - Revoke current refresh token
 
-### Members (`Admin` / `Staff` / `Member`)
-- `GET  /api/v1/users/me` - Get profile of the current authenticated user
-- `POST /api/v1/users/me/avatar` - Upload / update personal profile picture via Cloudinary (`multipart/form-data`)
-- `GET  /api/v1/members` - Search & paginate members (`admin`, `staff`)
-- `GET  /api/v1/members/expired` - List all members with expired subscriptions with pagination & search (`admin`, `staff`)
-- `GET  /api/v1/members/verify?query=...` - Front-desk verify access by phone, email, or member code (`admin`, `staff`)
-- `GET  /api/v1/members/qr/{code}` - Check member access via QR code (`admin`, `staff`)
-- `GET  /api/v1/members/{id}` - Get full member details, subscription & payment history
-- `PUT  /api/v1/members/{id}` - Update member profile details
-- `POST /api/v1/members/{id}/avatar` - Front-desk staff upload member photo via Cloudinary (`admin`, `staff`)
+#### Register Member
+`POST /api/v1/auth/register` *(Rate Limit: 3/hr per IP)*
+- **Request Body**:
+  ```json
+  {
+    "email": "tunde@example.com",
+    "phone": "08012345678",
+    "password": "securepassword123",
+    "first_name": "Tunde",
+    "last_name": "Adeleke",
+    "emergency_contact": {
+      "name": "Folake Adeleke",
+      "phone": "08087654321",
+      "relationship": "spouse"
+    },
+    "role": "member"
+  }
+  ```
+  > `relationship` must be one of: `spouse`, `parent`, `sibling`, `child`, `friend`, `relative`, `colleague`, `other`.
+- **Response (`201 Created`)**:
+  ```json
+  {
+    "user": {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "member_code": "EMT-104928",
+      "email": "tunde@example.com",
+      "phone": "08012345678",
+      "first_name": "Tunde",
+      "last_name": "Adeleke",
+      "role": "member",
+      "status": "active",
+      "emergency_contact": {
+        "name": "Folake Adeleke",
+        "phone": "08087654321",
+        "relationship": "spouse"
+      },
+      "created_at": "2026-11-27T20:00:00Z"
+    },
+    "tokens": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsIn...",
+      "refresh_token": "7a3f81e09c...",
+      "expires_in": 900
+    }
+  }
+  ```
+
+#### Login
+`POST /api/v1/auth/login` *(Rate Limit: 5/15m Account, 20/15m IP)*
+- **Request Body**:
+  ```json
+  {
+    "email": "tunde@example.com",
+    "password": "securepassword123"
+  }
+  ```
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "user": {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "member_code": "EMT-104928",
+      "email": "tunde@example.com",
+      "role": "member"
+    },
+    "tokens": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsIn...",
+      "refresh_token": "9b1c23d45e...",
+      "expires_in": 900
+    }
+  }
+  ```
+
+#### Refresh Token
+`POST /api/v1/auth/refresh`
+- **Request Body**:
+  ```json
+  {
+    "refresh_token": "9b1c23d45e..."
+  }
+  ```
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "tokens": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsIn...",
+      "refresh_token": "1a2b3c4d5e...",
+      "expires_in": 900
+    }
+  }
+  ```
+
+#### Logout
+`POST /api/v1/auth/logout`
+- **Request Body**:
+  ```json
+  {
+    "refresh_token": "1a2b3c4d5e..."
+  }
+  ```
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "message": "logged out successfully"
+  }
+  ```
+
+---
+
+### Members & Profiles
+
+#### Get Profile
+`GET /api/v1/users/me` *(Authenticated)*
+- **Response (`200 OK`)**: User profile object with `member_code`, `status`, and `emergency_contact`.
+
+#### Upload Personal Avatar
+`POST /api/v1/users/me/avatar` *(Authenticated)*
+- **Request Content-Type**: `multipart/form-data` (form field: `avatar` or `file`, max 10MB)
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "message": "profile picture updated successfully",
+    "avatar_url": "https://res.cloudinary.com/your-cloud/image/upload/v1/baki/profiles/...",
+    "user": { "id": "...", "avatar_url": "https://res.cloudinary.com/..." }
+  }
+  ```
+
+#### Search & List Members
+`GET /api/v1/members?page=1&page_size=20&search=Adeleke` *(`admin`, `staff`)*
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "members": [ ... ],
+    "total": 45,
+    "page": 1,
+    "page_size": 20
+  }
+  ```
+
+#### List Expired Members
+`GET /api/v1/members/expired?page=1&page_size=20&search=EMT` *(`admin`, `staff`)*
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "expired_members": [
+      {
+        "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "member_code": "EMT-104928",
+        "first_name": "Tunde",
+        "last_name": "Adeleke",
+        "email": "tunde@example.com",
+        "phone": "08012345678",
+        "avatar_url": "https://res.cloudinary.com/...",
+        "plan_name": "Monthly",
+        "subscription_id": "c1f7a0b3-...",
+        "end_date": "2026-11-20T10:00:00Z",
+        "days_expired": 7
+      }
+    ],
+    "total": 12,
+    "page": 1,
+    "page_size": 20
+  }
+  ```
+
+#### Verify Member Access at Desk
+`GET /api/v1/members/verify?query=EMT-104928` *(`admin`, `staff`)*
+- Query parameter `query` can be a Member Code (`EMT-XXXXXX`), phone number, or email address.
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "has_access": true,
+    "member": {
+      "id": "3fa85f64-...",
+      "member_code": "EMT-104928",
+      "first_name": "Tunde",
+      "last_name": "Adeleke",
+      "avatar_url": "https://res.cloudinary.com/...",
+      "status": "active"
+    },
+    "subscription": {
+      "id": "c1f7a0b3-...",
+      "status": "active",
+      "start_date": "2026-11-01T10:00:00Z",
+      "end_date": "2026-12-01T10:00:00Z"
+    },
+    "days_remaining": 4
+  }
+  ```
+
+#### Scan QR Code Access
+`GET /api/v1/members/qr/{code}` *(`admin`, `staff`)*
+- Verifies member code embedded in QR badge. Same response payload as `/verify`.
+
+#### Get Member Details
+`GET /api/v1/members/{id}` *(`admin`, `staff`)*
+- **Response (`200 OK`)**: Full member profile, current subscription, and past payment logs.
+
+#### Update Member Details
+`PUT /api/v1/members/{id}` *(`admin`, `staff`)*
+- **Request Body**:
+  ```json
+  {
+    "first_name": "Tunde",
+    "last_name": "Adeleke-Jones",
+    "phone": "08012345679",
+    "email": "tunde.new@example.com",
+    "emergency_contact": {
+      "name": "Folake Adeleke-Jones",
+      "phone": "08087654321",
+      "relationship": "spouse"
+    },
+    "status": "active"
+  }
+  ```
+- **Response (`200 OK`)**: Updated User object.
+
+#### Desk Upload Member Avatar
+`POST /api/v1/members/{id}/avatar` *(`admin`, `staff`)*
+- **Request Content-Type**: `multipart/form-data` (form field: `avatar` or `file`, max 10MB)
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "message": "member profile picture updated successfully",
+    "avatar_url": "https://res.cloudinary.com/...",
+    "user": { ... }
+  }
+  ```
+
+---
 
 ### Membership Plans
-- `GET  /api/v1/plans` - List active membership plans (public / authenticated)
-- `GET  /api/v1/plans/{id}` - Get plan details by ID
-- `POST /api/v1/plans` - Create a new membership plan (`admin`)
-- `PUT  /api/v1/plans/{id}` - Update a membership plan (`admin`)
+
+#### List Plans
+`GET /api/v1/plans` *(Public / Authenticated)*
+- **Response (`200 OK`)**: Array of active membership plans.
+
+#### Get Plan
+`GET /api/v1/plans/{id}`
+- **Response (`200 OK`)**: Single MembershipPlan object.
+
+#### Create Plan
+`POST /api/v1/plans` *(`admin`)*
+- **Request Body**:
+  ```json
+  {
+    "name": "VIP Unlimited",
+    "description": "Full gym & spa access for 1 month",
+    "duration_days": 30,
+    "price_cents": 3500000,
+    "currency": "NGN"
+  }
+  ```
+- **Response (`201 Created`)**: Created MembershipPlan object.
+
+#### Update Plan
+`PUT /api/v1/plans/{id}` *(`admin`)*
+- **Request Body**:
+  ```json
+  {
+    "name": "VIP Unlimited Premium",
+    "description": "Full gym, personal trainer & spa access",
+    "duration_days": 30,
+    "price_cents": 4000000,
+    "currency": "NGN",
+    "is_active": true
+  }
+  ```
+- **Response (`200 OK`)**: Updated MembershipPlan object.
+
+---
 
 ### Subscriptions
-- `GET  /api/v1/subscriptions/me` - Get active subscription of current logged-in member
-- `GET  /api/v1/subscriptions/history` - View all past subscriptions for the logged-in member
-- `POST /api/v1/subscriptions` - Assign / activate subscription manually (`admin`, `staff`)
+
+#### Get Active Subscription
+`GET /api/v1/subscriptions/me` *(Authenticated Member)*
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "subscription": {
+      "id": "c1f7a0b3-...",
+      "user_id": "3fa85f64-...",
+      "plan_id": "e2a1b0c9-...",
+      "start_date": "2026-11-20T10:00:00Z",
+      "end_date": "2026-12-20T10:00:00Z",
+      "status": "active",
+      "auto_renew": false
+    },
+    "days_remaining": 23
+  }
+  ```
+
+#### Get Subscription History
+`GET /api/v1/subscriptions/history` *(Authenticated Member)*
+- **Response (`200 OK`)**: Array of all past and present subscriptions for the authenticated member.
+
+#### Assign Subscription Manually
+`POST /api/v1/subscriptions` *(`admin`, `staff`)*
+- **Request Body**:
+  ```json
+  {
+    "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "plan_id": "e2a1b0c9-4826-4447-b892-71092a98f123",
+    "auto_renew": false
+  }
+  ```
+- **Response (`201 Created`)**: Activated/Extended Subscription object with stacked dates.
+
+---
 
 ### Payments
-- `GET  /api/v1/payments/quote?plan_id=...` - Calculate pricing quote with automatic ₦5,000 first-timer fee detection
-- `POST /api/v1/payments/manual` - Record front-desk payment (Cash, POS, Bank Transfer) (`admin`, `staff`)
-- `POST /api/v1/payments/initialize` - Initialize Paystack checkout for a membership plan
-- `POST /api/v1/payments/verify` - Verify an online Paystack transaction reference
-- `GET  /api/v1/payments` - List payment history (filtered to user for members, all for staff)
-- `POST /api/v1/payments/paystack/webhook` - Paystack webhook listener (HMAC-SHA512 verified)
+
+#### Get Payment Quote
+`GET /api/v1/payments/quote?plan_id={plan_id}` *(Authenticated)*
+- Optional query parameter `user_id={id}` for staff calculating quotes for members at the desk.
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "plan_id": "e2a1b0c9-4826-4447-b892-71092a98f123",
+    "plan_name": "Monthly",
+    "plan_price_cents": 2000000,
+    "first_timer_fee_cents": 500000,
+    "is_first_timer": true,
+    "total_amount_cents": 2500000,
+    "currency": "NGN"
+  }
+  ```
+
+#### Record Front-Desk Manual Payment
+`POST /api/v1/payments/manual` *(`admin`, `staff`)*
+- **Request Body**:
+  ```json
+  {
+    "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "plan_id": "e2a1b0c9-4826-4447-b892-71092a98f123",
+    "channel": "pos",
+    "amount_cents": 2500000,
+    "notes": "Paid via Zenith POS Terminal at front desk"
+  }
+  ```
+  > `channel` must be one of: `cash`, `pos`, `bank_transfer`.
+- **Response (`201 Created`)**:
+  ```json
+  {
+    "payment": {
+      "id": "8a7c2b1e-...",
+      "user_id": "3fa85f64-...",
+      "plan_id": "e2a1b0c9-...",
+      "amount_cents": 2500000,
+      "currency": "NGN",
+      "channel": "pos",
+      "status": "successful",
+      "reference": "MANUAL-1764284400-...",
+      "notes": "Paid via Zenith POS Terminal at front desk",
+      "created_at": "2026-11-27T20:00:00Z"
+    },
+    "subscription": {
+      "id": "c1f7a0b3-...",
+      "user_id": "3fa85f64-...",
+      "plan_id": "e2a1b0c9-...",
+      "start_date": "2026-11-27T20:00:00Z",
+      "end_date": "2026-12-27T20:00:00Z",
+      "status": "active"
+    }
+  }
+  ```
+
+#### Initialize Paystack Online Checkout
+`POST /api/v1/payments/initialize` *(Authenticated Member)*
+- **Request Body**:
+  ```json
+  {
+    "plan_id": "e2a1b0c9-4826-4447-b892-71092a98f123",
+    "callback_url": "http://localhost:8080/api/v1/payments/verify"
+  }
+  ```
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "authorization_url": "https://checkout.paystack.com/0123456789abcdef",
+    "access_code": "0123456789abcdef",
+    "reference": "baki_pay_1764284400_abc"
+  }
+  ```
+
+#### Verify Online Payment
+`POST /api/v1/payments/verify` *(Authenticated)*
+- **Request Body**:
+  ```json
+  {
+    "reference": "baki_pay_1764284400_abc",
+    "plan_id": "e2a1b0c9-4826-4447-b892-71092a98f123"
+  }
+  ```
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "payment": {
+      "id": "8a7c2b1e-...",
+      "reference": "baki_pay_1764284400_abc",
+      "status": "successful",
+      "channel": "paystack",
+      "amount_cents": 2000000
+    },
+    "subscription": {
+      "id": "c1f7a0b3-...",
+      "status": "active",
+      "start_date": "2026-11-27T20:00:00Z",
+      "end_date": "2026-12-27T20:00:00Z"
+    }
+  }
+  ```
+
+#### List Payments
+`GET /api/v1/payments?page=1&page_size=20` *(Members see own history; Admin/Staff see all)*
+- **Response (`200 OK`)**:
+  ```json
+  {
+    "payments": [ ... ],
+    "total": 18,
+    "page": 1,
+    "page_size": 20
+  }
+  ```
+
+#### Paystack Webhook Listener
+`POST /api/v1/payments/paystack/webhook`
+- **Request Header**: `x-paystack-signature: <hmac-sha512-hex-hash>`
+- **Request Body**: Paystack transaction event JSON
+- **Response (`200 OK`)**:
+  ```json
+  { "status": "ok" }
+  ```
 
 ---
 
