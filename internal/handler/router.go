@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bolaji/baki/internal/domain"
-	"github.com/bolaji/baki/internal/middleware"
-	"github.com/bolaji/baki/internal/service"
+	"github.com/TheDurodola/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/middleware"
+	"github.com/TheDurodola/baki/internal/service"
 )
 
 type RouterParams struct {

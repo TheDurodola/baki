@@ -7,18 +7,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bolaji/baki/internal/config"
-	"github.com/bolaji/baki/internal/domain"
-	"github.com/bolaji/baki/internal/service"
+	"github.com/TheDurodola/baki/internal/config"
+	"github.com/TheDurodola/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/service"
 	"github.com/google/uuid"
 )
 
 func TestGenerateMemberCode(t *testing.T) {
 	code := service.GenerateMemberCode()
-	if !strings.HasPrefix(code, "GYM-") {
-		t.Fatalf("expected member code to start with GYM-, got: %s", code)
+	if !strings.HasPrefix(code, "EMT-") {
+		t.Fatalf("expected member code to start with EMT-, got: %s", code)
 	}
-	if len(code) != 10 { // "GYM-" + 6 digits = 10 chars
+	if len(code) != 10 { // "EMT-" + 6 digits = 10 chars
 		t.Fatalf("expected member code length 10, got: %d (%s)", len(code), code)
 	}
 }

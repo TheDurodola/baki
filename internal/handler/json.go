@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/bolaji/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/domain"
 )
 
 type responseEnvelope struct {

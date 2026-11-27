@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bolaji/baki/internal/config"
-	"github.com/bolaji/baki/internal/domain"
-	"github.com/bolaji/baki/internal/repository"
+	"github.com/TheDurodola/baki/internal/config"
+	"github.com/TheDurodola/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/repository"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

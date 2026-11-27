@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/bolaji/baki/internal/service"
+	"github.com/TheDurodola/baki/internal/service"
 	"github.com/google/uuid"
 )
 

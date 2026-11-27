@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bolaji/baki/internal/middleware"
-	"github.com/bolaji/baki/internal/service"
+	"github.com/TheDurodola/baki/internal/middleware"
+	"github.com/TheDurodola/baki/internal/service"
 	"github.com/google/uuid"
 )
 

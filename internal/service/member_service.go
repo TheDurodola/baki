@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bolaji/baki/internal/domain"
-	"github.com/bolaji/baki/internal/gateway"
-	"github.com/bolaji/baki/internal/repository"
+	"github.com/TheDurodola/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/gateway"
+	"github.com/TheDurodola/baki/internal/repository"
 	"github.com/google/uuid"
 )
 

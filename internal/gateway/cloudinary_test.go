@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bolaji/baki/internal/config"
-	"github.com/bolaji/baki/internal/gateway"
+	"github.com/TheDurodola/baki/internal/config"
+	"github.com/TheDurodola/baki/internal/gateway"
 )
 
 func TestCloudinaryGateway_UploadImage_MockMode(t *testing.T) {

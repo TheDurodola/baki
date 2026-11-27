@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bolaji/baki/internal/config"
+	"github.com/TheDurodola/baki/internal/config"
 	"github.com/google/uuid"
 )
 

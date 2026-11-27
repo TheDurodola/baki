@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bolaji/baki/internal/domain"
-	"github.com/bolaji/baki/internal/service"
+	"github.com/TheDurodola/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/service"
 )
 
 type contextKey string

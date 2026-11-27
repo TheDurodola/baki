@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bolaji/baki/internal/config"
-	"github.com/bolaji/baki/internal/domain"
-	"github.com/bolaji/baki/internal/handler"
-	"github.com/bolaji/baki/internal/service"
+	"github.com/TheDurodola/baki/internal/config"
+	"github.com/TheDurodola/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/handler"
+	"github.com/TheDurodola/baki/internal/service"
 	"github.com/google/uuid"
 )
 

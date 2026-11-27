@@ -1,4 +1,4 @@
-module github.com/bolaji/baki
+module github.com/TheDurodola/baki
 
 go 1.26.0
 

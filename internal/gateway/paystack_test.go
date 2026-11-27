@@ -6,8 +6,8 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/bolaji/baki/internal/config"
-	"github.com/bolaji/baki/internal/gateway"
+	"github.com/TheDurodola/baki/internal/config"
+	"github.com/TheDurodola/baki/internal/gateway"
 )
 
 func TestPaystackGateway_VerifyWebhookSignature(t *testing.T) {

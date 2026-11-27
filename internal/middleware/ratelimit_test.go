@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bolaji/baki/internal/middleware"
+	"github.com/TheDurodola/baki/internal/middleware"
 )
 
 func TestSlidingWindowLog_BasicLimit(t *testing.T) {

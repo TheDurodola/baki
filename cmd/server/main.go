@@ -11,13 +11,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bolaji/baki/internal/config"
-	"github.com/bolaji/baki/internal/database"
-	"github.com/bolaji/baki/internal/gateway"
-	"github.com/bolaji/baki/internal/handler"
-	"github.com/bolaji/baki/internal/middleware"
-	"github.com/bolaji/baki/internal/repository"
-	"github.com/bolaji/baki/internal/service"
+	"github.com/TheDurodola/baki/internal/config"
+	"github.com/TheDurodola/baki/internal/database"
+	"github.com/TheDurodola/baki/internal/gateway"
+	"github.com/TheDurodola/baki/internal/handler"
+	"github.com/TheDurodola/baki/internal/middleware"
+	"github.com/TheDurodola/baki/internal/repository"
+	"github.com/TheDurodola/baki/internal/service"
 )
 
 func main() {

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bolaji/baki/internal/domain"
-	"github.com/bolaji/baki/internal/repository"
+	"github.com/TheDurodola/baki/internal/domain"
+	"github.com/TheDurodola/baki/internal/repository"
 	"github.com/google/uuid"
 )
 
@@ -133,7 +133,7 @@ func (s *SubscriptionService) VerifyAccess(ctx context.Context, identifier strin
 	var err error
 
 	// Determine lookup strategy
-	if strings.HasPrefix(strings.ToUpper(identifier), "GYM-") {
+	if strings.HasPrefix(strings.ToUpper(identifier), "EMT-") || strings.HasPrefix(strings.ToUpper(identifier), "GYM-") {
 		member, err = s.userRepo.GetByMemberCode(ctx, identifier)
 	} else if strings.Contains(identifier, "@") {
 		member, err = s.userRepo.GetByEmail(ctx, identifier)
